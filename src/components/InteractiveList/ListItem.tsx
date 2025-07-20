@@ -4,51 +4,51 @@ import ItemActions from './ItemActions';
 
 const ItemContainer = styled.div<{ isHovered?: boolean }>`
   width: 100%;
-  margin-bottom: 4px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 16px;
+  padding: 12px 16px;
   border-radius: 6px;
   background: transparent;
   color: ${({ theme }) => theme.text};
   border: 1.5px solid ${({ theme }) => theme.text}22;
   transition: background 0.2s, border-color 0.2s;
   position: relative;
+  box-sizing: border-box;
+  
   &:hover {
     background: ${({ theme }) => theme.container};
     border-color: ${({ theme }) => theme.accent};
-  }
-  &:last-child {
-    margin-bottom: 0;
   }
 `;
 
 const ValueText = styled.span`
   flex: 1;
-  font-size: 1rem;
-  word-break: break-all;
+  font-size: 14px;
+  word-break: break-word;
   text-align: left;
+  margin-right: 12px;
 `;
 
 const EditInput = styled.input`
   flex: 1;
-  font-size: 1rem;
-  padding: 4px 8px;
+  font-size: 14px;
+  padding: 8px 12px;
   border-radius: 4px;
   border: 1.5px solid ${({ theme }) => theme.accent};
   background: ${({ theme }) => theme.container};
   color: ${({ theme }) => theme.text};
   outline: none;
+  margin-right: 12px;
 `;
 
 const IconsWrapper = styled.div<{ isHovered?: boolean }>`
   display: flex;
   align-items: center;
-  margin-left: 12px;
   opacity: ${({ isHovered }) => (isHovered ? 1 : 0)};
   transition: opacity 0.2s;
-  gap: 0;
+  gap: 4px;
+  flex-shrink: 0;
 `;
 
 interface ListItemProps {

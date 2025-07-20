@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import Chance from 'chance';
 
 interface ListItemData {
   id: string;
@@ -8,6 +9,9 @@ interface ListItemData {
 interface UseInteractiveListProps {
   initialItems?: ListItemData[];
 }
+
+// Initialize chance instance
+const chance = new Chance();
 
 export const useInteractiveList = ({ initialItems = [] }: UseInteractiveListProps = {}) => {
   const [items, setItems] = useState<ListItemData[]>(initialItems);
@@ -39,7 +43,7 @@ export const useInteractiveList = ({ initialItems = [] }: UseInteractiveListProp
 
   const addItem = useCallback((value: string) => {
     const newItem: ListItemData = {
-      id: Date.now().toString(),
+      id: chance.guid(),
       value: value.trim()
     };
     setItems(prev => [...prev, newItem]);

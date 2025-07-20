@@ -1,11 +1,13 @@
 import React, { FunctionComponent, useCallback } from 'react';
 import styled from 'styled-components';
 import ListItem from './ListItem';
+import InputBar from './InputBar';
 import { useInteractiveList } from '../../hooks/useInteractiveList';
+import { mockItems } from '../../data/mockData';
 
 const ListContainer = styled.div`
-  min-width: 360px;
-  min-height: 240px;
+  width: 400px;
+  max-width: 90vw;
   background: ${({ theme }) => theme.container};
   color: ${({ theme }) => theme.text};
   border-radius: 8px;
@@ -13,14 +15,20 @@ const ListContainer = styled.div`
   padding: 24px;
   display: flex;
   flex-direction: column;
-  align-items: center;
 `;
 
-const mockItems = [
-  { id: '1', value: 'First item' },
-  { id: '2', value: 'Second item' },
-  { id: '3', value: 'Third item' },
-];
+const ListTitle = styled.h3`
+  margin: 0 0 16px 0;
+  color: ${({ theme }) => theme.text};
+  text-align: center;
+`;
+
+const ItemsContainer = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+`;
 
 const InteractiveList: FunctionComponent = () => {
   const {
@@ -29,7 +37,8 @@ const InteractiveList: FunctionComponent = () => {
     handleEdit,
     handleDelete,
     handleMouseEnter,
-    handleMouseLeave
+    handleMouseLeave,
+    addItem
   } = useInteractiveList({ initialItems: mockItems });
 
   const renderListItem = useCallback((item: typeof items[0]) => (
@@ -46,8 +55,11 @@ const InteractiveList: FunctionComponent = () => {
 
   return (
     <ListContainer>
-      <h3>Interactive List</h3>
-      {items.map(renderListItem)}
+      <ListTitle>Interactive List</ListTitle>
+      <InputBar onAddItem={addItem} />
+      <ItemsContainer>
+        {items.map(renderListItem)}
+      </ItemsContainer>
     </ListContainer>
   );
 };
