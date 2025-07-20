@@ -1,7 +1,6 @@
 import React from 'react';
-import styled, { ThemeProvider } from 'styled-components';
+import styled from 'styled-components';
 import InteractiveList from './components/InteractiveList/InteractiveList';
-import { darkTheme } from './theme';
 
 const CenteredContainer = styled.div`
   min-height: 100vh;
@@ -13,11 +12,9 @@ const CenteredContainer = styled.div`
 
 const App: React.FC = () => {
   return (
-    <ThemeProvider theme={darkTheme}>
-      <CenteredContainer>
-        <InteractiveList />
-      </CenteredContainer>
-    </ThemeProvider>
+    <CenteredContainer>
+      <InteractiveList />
+    </CenteredContainer>
   );
 };
 

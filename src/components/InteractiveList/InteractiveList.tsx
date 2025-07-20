@@ -1,5 +1,6 @@
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, useState, useCallback } from 'react';
 import styled from 'styled-components';
+import ListItem from './ListItem';
 
 const ListContainer = styled.div`
   min-width: 360px;
@@ -14,11 +15,49 @@ const ListContainer = styled.div`
   align-items: center;
 `;
 
+interface ListItemData {
+  id: string;
+  value: string;
+}
+
+const mockItems: ListItemData[] = [
+  { id: '1', value: 'First item' },
+  { id: '2', value: 'Second item' },
+  { id: '3', value: 'Third item' },
+];
+
 const InteractiveList: FunctionComponent = () => {
+  const [items, setItems] = useState<ListItemData[]>(mockItems);
+  const [hoveredItemId, setHoveredItemId] = useState<string | null>(null);
+
+  const handleEdit = useCallback((itemId: string) => {
+    console.log('Edit item:', itemId);
+    // TODO: Implement edit functionality
+  }, []);
+
+  const handleMouseEnter = useCallback((itemId: string) => {
+    setHoveredItemId(itemId);
+  }, []);
+
+  const handleMouseLeave = useCallback(() => {
+    setHoveredItemId(null);
+  }, []);
+
+  const renderListItem = useCallback((item: ListItemData) => (
+    <ListItem
+      key={item.id}
+      value={item.value}
+      onEdit={() => handleEdit(item.id)}
+      isHovered={hoveredItemId === item.id}
+      onMouseEnter={() => handleMouseEnter(item.id)}
+      onMouseLeave={handleMouseLeave}
+    />
+  ), [hoveredItemId, handleEdit, handleMouseEnter, handleMouseLeave]);
+
   return (
     <ListContainer>
       <h3>Interactive List</h3>
-      {/* Future: InputBar, ListItems, EmptyState, etc. */}
+      {items.map(renderListItem)}
     </ListContainer>
   );
 };
