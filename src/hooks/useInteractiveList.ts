@@ -49,9 +49,6 @@ export const useInteractiveList = ({ initialItems = [] }: UseInteractiveListProp
     setItems(prev => [...prev, newItem]);
   }, []);
 
-  const clearItems = useCallback(() => {
-    setItems([]);
-  }, []);
 
   return {
     items,
@@ -61,6 +58,5 @@ export const useInteractiveList = ({ initialItems = [] }: UseInteractiveListProp
     handleMouseEnter,
     handleMouseLeave,
     addItem,
-    clearItems
   };
 }; 

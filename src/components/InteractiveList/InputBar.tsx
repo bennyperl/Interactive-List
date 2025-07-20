@@ -1,7 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
 import AddIcon from '../../icons/AddIcon';
-import { useTheme } from '../../hooks/useTheme';
 
 const InputContainer = styled.div`
   display: flex;
@@ -72,7 +71,6 @@ const InputBar: React.FC<InputBarProps> = ({
   const [inputValue, setInputValue] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  const theme = useTheme();
 
   const handleSubmit = () => {
     const trimmedValue = inputValue.trim();
