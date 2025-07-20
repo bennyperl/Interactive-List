@@ -3,6 +3,7 @@ import { FixedSizeList as List } from 'react-window';
 import styled from 'styled-components';
 import ListItem from './ListItem';
 import LoadingItem from './LoadingItem';
+import EmptyState from './EmptyState';
 
 const VirtualizedContainer = styled.div`
   width: 100%;
@@ -39,6 +40,16 @@ const VirtualizedContainer = styled.div`
   .react-window__list::-webkit-scrollbar-corner {
     background: transparent;
   }
+`;
+
+const EmptyStateContainer = styled.div`
+  width: 100%;
+  height: 320px;
+  background: ${({ theme }) => theme.background};
+  border: 1px solid ${({ theme }) => theme.border}30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 interface ListItemData {
@@ -105,6 +116,15 @@ const VirtualizedList: React.FC<VirtualizedListProps> = ({
 
   // Calculate total count for virtualization
   const itemCount = isLoading ? Math.max(items.length + 10, totalItems) : items.length;
+
+  // Show empty state when no items and not loading
+  if (!isLoading && items.length === 0) {
+    return (
+      <EmptyStateContainer>
+        <EmptyState isReadOnly={readOnly} />
+      </EmptyStateContainer>
+    );
+  }
 
   return (
     <VirtualizedContainer>
