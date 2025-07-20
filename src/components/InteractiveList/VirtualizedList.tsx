@@ -55,6 +55,7 @@ interface VirtualizedListProps {
   onMouseLeave: () => void;
   isLoading?: boolean;
   totalItems?: number;
+  readOnly?: boolean;
 }
 
 const ITEM_HEIGHT = 52; // Reduced height for less spacing between items
@@ -67,7 +68,8 @@ const VirtualizedList: React.FC<VirtualizedListProps> = ({
   onMouseEnter,
   onMouseLeave,
   isLoading = false,
-  totalItems = 0
+  totalItems = 0,
+  readOnly = false
 }) => {
   const renderRow = useCallback(({ index, style }: { index: number; style: React.CSSProperties }) => {
     // Show loading item if data is still loading and this index is beyond loaded items
@@ -91,6 +93,7 @@ const VirtualizedList: React.FC<VirtualizedListProps> = ({
             isHovered={hoveredItemId === item.id}
             onMouseEnter={() => onMouseEnter(item.id)}
             onMouseLeave={onMouseLeave}
+            readOnly={readOnly}
           />
         </div>
       );
@@ -98,7 +101,7 @@ const VirtualizedList: React.FC<VirtualizedListProps> = ({
 
     // Fallback empty div
     return <div style={style} />;
-  }, [items, hoveredItemId, onEdit, onDelete, onMouseEnter, onMouseLeave, isLoading]);
+  }, [items, hoveredItemId, onEdit, onDelete, onMouseEnter, onMouseLeave, isLoading, readOnly]);
 
   // Calculate total count for virtualization
   const itemCount = isLoading ? Math.max(items.length + 10, totalItems) : items.length;

@@ -58,6 +58,7 @@ interface ListItemProps {
   isHovered?: boolean;
   onMouseEnter: () => void;
   onMouseLeave: () => void;
+  readOnly?: boolean;
 }
 
 const ListItem: React.FC<ListItemProps> = ({ 
@@ -66,19 +67,22 @@ const ListItem: React.FC<ListItemProps> = ({
   onDelete,
   isHovered,
   onMouseEnter,
-  onMouseLeave
+  onMouseLeave,
+  readOnly = false
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(value);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleEditClick = () => {
+    if (readOnly) return;
     setIsEditing(true);
     setEditValue(value);
     setTimeout(() => inputRef.current?.focus(), 0);
   };
 
   const handleSave = () => {
+    if (readOnly) return;
     if (editValue.trim() !== '' && editValue !== value) {
       onEdit(editValue.trim());
     }
@@ -86,11 +90,13 @@ const ListItem: React.FC<ListItemProps> = ({
   };
 
   const handleCancel = () => {
+    if (readOnly) return;
     setEditValue(value);
     setIsEditing(false);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (readOnly) return;
     if (e.key === 'Enter') {
       handleSave();
     } else if (e.key === 'Escape') {
@@ -111,11 +117,12 @@ const ListItem: React.FC<ListItemProps> = ({
           onChange={(e) => setEditValue(e.target.value)}
           onBlur={handleSave}
           onKeyDown={handleKeyDown}
+          disabled={readOnly}
         />
       ) : (
         <ValueText>{value}</ValueText>
       )}
-      {!isEditing && (
+      {!isEditing && !readOnly && (
         <IconsWrapper isHovered={isHovered}>
           <ItemActions onEdit={handleEditClick} onDelete={onDelete} />
         </IconsWrapper>
