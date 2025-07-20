@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useState, useEffect } from 'react';
+import React, { FunctionComponent, useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import InputBar from './InputBar';
 import VirtualizedList from './VirtualizedList';
@@ -37,7 +37,7 @@ const ListTitle = styled.h2`
 
 const InteractiveList: FunctionComponent = () => {
   const [isLoading, setIsLoading] = useState(true);
-  const [currentItems, setCurrentItems] = useState<typeof mockItems>([]);
+  const [initialItems, setInitialItems] = useState<typeof mockItems>([]);
 
   const {
     items,
@@ -47,18 +47,18 @@ const InteractiveList: FunctionComponent = () => {
     handleMouseEnter,
     handleMouseLeave,
     addItem
-  } = useInteractiveList({ initialItems: currentItems });
+  } = useInteractiveList({ initialItems });
 
   // Simulate loading data
   useEffect(() => {
     const loadData = async () => {
       setIsLoading(true);
-      setCurrentItems([]); // Start with empty items
       
       // Simulate API delay
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      setCurrentItems(mockItems);
+      // Update initial items to trigger hook re-initialization
+      setInitialItems(mockItems);
       
       setIsLoading(false);
     };
@@ -72,7 +72,7 @@ const InteractiveList: FunctionComponent = () => {
       
       <InputBar onAddItem={addItem} />
       <VirtualizedList
-        items={currentItems}
+        items={items}
         hoveredItemId={hoveredItemId}
         onEdit={handleEdit}
         onDelete={handleDelete}

@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import Chance from 'chance';
 
 interface ListItemData {
@@ -16,6 +16,11 @@ const chance = new Chance();
 export const useInteractiveList = ({ initialItems = [] }: UseInteractiveListProps = {}) => {
   const [items, setItems] = useState<ListItemData[]>(initialItems);
   const [hoveredItemId, setHoveredItemId] = useState<string | null>(null);
+
+  // Update items when initialItems change
+  useEffect(() => {
+    setItems(initialItems);
+  }, [initialItems]);
 
   const handleEdit = useCallback((itemId: string, newValue: string) => {
     setItems(prev => prev.map(item => 
@@ -49,6 +54,9 @@ export const useInteractiveList = ({ initialItems = [] }: UseInteractiveListProp
     setItems(prev => [...prev, newItem]);
   }, []);
 
+  const clearItems = useCallback(() => {
+    setItems([]);
+  }, []);
 
   return {
     items,
@@ -58,5 +66,6 @@ export const useInteractiveList = ({ initialItems = [] }: UseInteractiveListProp
     handleMouseEnter,
     handleMouseLeave,
     addItem,
+    clearItems
   };
 }; 
