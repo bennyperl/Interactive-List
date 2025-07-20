@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
 import ItemActions from './ItemActions';
 
@@ -31,6 +31,17 @@ const ValueText = styled.span`
   text-align: left;
 `;
 
+const EditInput = styled.input`
+  flex: 1;
+  font-size: 1rem;
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 1.5px solid ${({ theme }) => theme.accent};
+  background: ${({ theme }) => theme.container};
+  color: ${({ theme }) => theme.text};
+  outline: none;
+`;
+
 const IconsWrapper = styled.div<{ isHovered?: boolean }>`
   display: flex;
   align-items: center;
@@ -42,7 +53,8 @@ const IconsWrapper = styled.div<{ isHovered?: boolean }>`
 
 interface ListItemProps {
   value: string;
-  onEdit: () => void;
+  onEdit: (newValue: string) => void;
+  onDelete: () => void;
   isHovered?: boolean;
   onMouseEnter: () => void;
   onMouseLeave: () => void;
@@ -51,20 +63,63 @@ interface ListItemProps {
 const ListItem: React.FC<ListItemProps> = ({ 
   value, 
   onEdit, 
+  onDelete,
   isHovered,
   onMouseEnter,
   onMouseLeave
 }) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editValue, setEditValue] = useState(value);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleEditClick = () => {
+    setIsEditing(true);
+    setEditValue(value);
+    setTimeout(() => inputRef.current?.focus(), 0);
+  };
+
+  const handleSave = () => {
+    if (editValue.trim() !== '' && editValue !== value) {
+      onEdit(editValue.trim());
+    }
+    setIsEditing(false);
+  };
+
+  const handleCancel = () => {
+    setEditValue(value);
+    setIsEditing(false);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSave();
+    } else if (e.key === 'Escape') {
+      handleCancel();
+    }
+  };
+
   return (
     <ItemContainer 
       isHovered={isHovered}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      <ValueText>{value}</ValueText>
-      <IconsWrapper isHovered={isHovered}>
-        <ItemActions onEdit={onEdit} />
-      </IconsWrapper>
+      {isEditing ? (
+        <EditInput
+          ref={inputRef}
+          value={editValue}
+          onChange={(e) => setEditValue(e.target.value)}
+          onBlur={handleSave}
+          onKeyDown={handleKeyDown}
+        />
+      ) : (
+        <ValueText>{value}</ValueText>
+      )}
+      {!isEditing && (
+        <IconsWrapper isHovered={isHovered}>
+          <ItemActions onEdit={handleEditClick} onDelete={onDelete} />
+        </IconsWrapper>
+      )}
     </ItemContainer>
   );
 };

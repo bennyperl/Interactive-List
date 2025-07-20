@@ -5,21 +5,18 @@ import { useTheme } from '../../hooks/useTheme';
 
 interface ItemActionsProps {
   onEdit: () => void;
+  onDelete: () => void;
 }
 
-const ItemActions: React.FC<ItemActionsProps> = ({ onEdit }) => {
+const ItemActions: React.FC<ItemActionsProps> = ({ onEdit, onDelete }) => {
   const theme = useTheme();
-
-  const handleDelete = () => {
-    // No-op function - does nothing when clicked
-  };
 
   return (
     <>
       <IconButton title="Edit" onClick={onEdit}>
         <EditIcon />
       </IconButton>
-      <IconButton title="Remove" onClick={handleDelete} color={theme.delete}>
+      <IconButton title="Remove" onClick={onDelete} color={theme.delete}>
         <DeleteIcon />
       </IconButton>
     </>
