@@ -5,18 +5,21 @@ import ListItem from './ListItem';
 import LoadingItem from './LoadingItem';
 import EmptyState from './EmptyState';
 
-const VirtualizedContainer = styled.div`
+const VirtualizedContainer = styled.div<{ hasError?: boolean }>`
   width: 100%;
   height: 320px;
   background: ${({ theme }) => theme.background};
-  border: 1px solid ${({ theme }) => theme.border}30;
+  border: 2px solid ${({ hasError, theme }) => hasError ? theme.delete : `${theme.border}30`};
+  border-radius: ${({ hasError }) => hasError ? '0' : '0'};
   overflow: hidden;
   box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: border-color 0.3s ease;
   
   /* Dark theme scrollbar styling */
   .react-window__list {
     scrollbar-width: thin;
     scrollbar-color: ${({ theme }) => theme.border} ${({ theme }) => theme.background};
+    overflow-x: hidden;
   }
   
   .react-window__list::-webkit-scrollbar {
@@ -42,14 +45,15 @@ const VirtualizedContainer = styled.div`
   }
 `;
 
-const EmptyStateContainer = styled.div`
+const EmptyStateContainer = styled.div<{ hasError?: boolean }>`
   width: 100%;
   height: 320px;
   background: ${({ theme }) => theme.background};
-  border: 1px solid ${({ theme }) => theme.border}30;
+  border: 2px solid ${({ hasError, theme }) => hasError ? theme.delete : `${theme.border}30`};
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: border-color 0.3s ease;
 `;
 
 interface ListItemData {
@@ -67,6 +71,7 @@ interface VirtualizedListProps {
   isLoading?: boolean;
   totalItems?: number;
   readOnly?: boolean;
+  error?: boolean;
 }
 
 const ITEM_HEIGHT = 52; // Reduced height for less spacing between items
@@ -80,7 +85,8 @@ const VirtualizedList: React.FC<VirtualizedListProps> = ({
   onMouseLeave,
   isLoading = false,
   totalItems = 0,
-  readOnly = false
+  readOnly = false,
+  error = false
 }) => {
   const renderRow = useCallback(({ index, style }: { index: number; style: React.CSSProperties }) => {
     // Show loading item if data is still loading and this index is beyond loaded items
@@ -105,6 +111,7 @@ const VirtualizedList: React.FC<VirtualizedListProps> = ({
             onMouseEnter={() => onMouseEnter(item.id)}
             onMouseLeave={onMouseLeave}
             readOnly={readOnly}
+            error={error}
           />
         </div>
       );
@@ -112,7 +119,7 @@ const VirtualizedList: React.FC<VirtualizedListProps> = ({
 
     // Fallback empty div
     return <div style={style} />;
-  }, [items, hoveredItemId, onEdit, onDelete, onMouseEnter, onMouseLeave, isLoading, readOnly]);
+  }, [items, hoveredItemId, onEdit, onDelete, onMouseEnter, onMouseLeave, isLoading, readOnly, error]);
 
   // Calculate total count for virtualization
   const itemCount = isLoading ? Math.max(items.length + 10, totalItems) : items.length;
@@ -120,14 +127,14 @@ const VirtualizedList: React.FC<VirtualizedListProps> = ({
   // Show empty state when no items and not loading
   if (!isLoading && items.length === 0) {
     return (
-      <EmptyStateContainer>
+      <EmptyStateContainer hasError={error}>
         <EmptyState isReadOnly={readOnly} />
       </EmptyStateContainer>
     );
   }
 
   return (
-    <VirtualizedContainer>
+    <VirtualizedContainer hasError={error}>
       <List
         height={320}
         itemCount={itemCount}

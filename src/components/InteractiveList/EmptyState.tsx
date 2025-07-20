@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { messages } from '../../messages';
 
 const EmptyContainer = styled.div`
   display: flex;
@@ -49,13 +50,10 @@ const EmptyState: React.FC<EmptyStateProps> = ({ isReadOnly = false }) => {
     <EmptyContainer>
       <EmptyIcon>📝</EmptyIcon>
       <EmptyTitle>
-        {isReadOnly ? 'No Items Available' : 'No Items Yet'}
+        {isReadOnly ? messages.emptyState.title.readOnly : messages.emptyState.title.editable}
       </EmptyTitle>
       <EmptyDescription>
-        {isReadOnly 
-          ? 'There are no items to display in read-only mode.'
-          : 'Start by adding your first item using the input field above.'
-        }
+        {isReadOnly ? messages.emptyState.description.readOnly : messages.emptyState.description.editable}
       </EmptyDescription>
     </EmptyContainer>
   );

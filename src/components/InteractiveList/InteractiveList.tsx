@@ -4,6 +4,7 @@ import InputBar from './InputBar';
 import VirtualizedList from './VirtualizedList';
 import { useInteractiveList } from '../../hooks/useInteractiveList';
 import { mockItems } from '../../data/mockData';
+import { messages } from '../../messages';
 
 const ListContainer = styled.div`
   width: 480px;
@@ -77,7 +78,27 @@ const ReadOnlyIndicator = styled.div<{ isReadOnly: boolean }>`
   margin-bottom: 16px;
 `;
 
-const InteractiveList: FunctionComponent = () => {
+const ErrorIndicator = styled.div<{ hasError: boolean }>`
+  display: ${({ hasError }) => hasError ? 'flex' : 'none'};
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  background: ${({ theme }) => theme.delete}20;
+  border: 1px solid ${({ theme }) => theme.delete}40;
+  border-radius: 8px;
+  color: ${({ theme }) => theme.delete};
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 16px;
+`;
+
+interface InteractiveListProps {
+  error?: boolean;
+}
+
+const InteractiveList: FunctionComponent<InteractiveListProps> = ({ error = false }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [initialItems, setInitialItems] = useState<typeof mockItems>([]);
   const [isReadOnly, setIsReadOnly] = useState(false);
@@ -116,20 +137,24 @@ const InteractiveList: FunctionComponent = () => {
   return (
     <ListContainer>
       <HeaderContainer>
-        <ListTitle>Interactive List</ListTitle>
+        <ListTitle>{messages.title}</ListTitle>
         <ReadOnlyToggle 
           isReadOnly={isReadOnly}
           onClick={toggleReadOnly}
         >
-          {isReadOnly ? 'Read Only' : 'Editable'}
+          {isReadOnly ? messages.readOnlyButton.readOnly : messages.readOnlyButton.editable}
         </ReadOnlyToggle>
       </HeaderContainer>
       
+      <ErrorIndicator hasError={error}>
+        {messages.errorIndicator}
+      </ErrorIndicator>
+      
       <ReadOnlyIndicator isReadOnly={isReadOnly}>
-        Read Only Mode - Items cannot be added, edited, or deleted
+        {messages.readOnlyIndicator}
       </ReadOnlyIndicator>
       
-      <InputBar onAddItem={addItem} disabled={isReadOnly} />
+      <InputBar onAddItem={addItem} disabled={isReadOnly || error} />
       <VirtualizedList
         items={items}
         hoveredItemId={hoveredItemId}
@@ -140,6 +165,7 @@ const InteractiveList: FunctionComponent = () => {
         isLoading={isLoading}
         totalItems={items.length}
         readOnly={isReadOnly}
+        error={error}
       />
     </ListContainer>
   );

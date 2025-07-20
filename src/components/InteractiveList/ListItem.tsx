@@ -8,17 +8,23 @@ const ItemContainer = styled.div<{ isHovered?: boolean }>`
   align-items: center;
   justify-content: space-between;
   padding: 12px 16px;
-  border-radius: 6px;
-  background: transparent;
+  border-radius: 10px;
+  background: ${({ isHovered, theme }) => 
+    isHovered 
+      ? `linear-gradient(135deg, ${theme.container} 0%, ${theme.background} 100%)`
+      : 'transparent'
+  };
   color: ${({ theme }) => theme.text};
-  border: 1.5px solid ${({ theme }) => theme.text}22;
-  transition: background 0.2s, border-color 0.2s;
+  border: 1.5px solid ${({ isHovered, theme }) => 
+    isHovered ? theme.accent : `${theme.text}15`
+  };
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   box-sizing: border-box;
   
   &:hover {
-    background: ${({ theme }) => theme.container};
-    border-color: ${({ theme }) => theme.accent};
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   }
 `;
 
@@ -59,6 +65,7 @@ interface ListItemProps {
   onMouseEnter: () => void;
   onMouseLeave: () => void;
   readOnly?: boolean;
+  error?: boolean;
 }
 
 const ListItem: React.FC<ListItemProps> = ({ 
@@ -68,7 +75,8 @@ const ListItem: React.FC<ListItemProps> = ({
   isHovered,
   onMouseEnter,
   onMouseLeave,
-  readOnly = false
+  readOnly = false,
+  error = false
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(value);

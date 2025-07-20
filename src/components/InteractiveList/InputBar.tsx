@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
 import AddIcon from '../../icons/AddIcon';
+import { messages } from '../../messages';
 
 const InputContainer = styled.div`
   display: flex;
@@ -65,7 +66,7 @@ const handleInputChange = (setInputValue: (value: string) => void) => (e: React.
 
 const InputBar: React.FC<InputBarProps> = ({ 
   onAddItem, 
-  placeholder = "Add new item...",
+  placeholder = messages.inputPlaceholder,
   disabled = false 
 }) => {
   const [inputValue, setInputValue] = useState('');
@@ -83,7 +84,7 @@ const InputBar: React.FC<InputBarProps> = ({
       setInputValue('');
       inputRef.current?.focus();
     } catch (error) {
-      console.error('Failed to add item:', error);
+      console.error(messages.errors.addItemFailed, error);
     } finally {
       setIsSubmitting(false);
     }
@@ -111,7 +112,7 @@ const InputBar: React.FC<InputBarProps> = ({
       <AddButton 
         onClick={handleSubmit}
         disabled={isButtonDisabled}
-        title="Add item"
+        title={messages.addButtonTitle}
       >
         <AddIcon size="medium" color="white" />
       </AddButton>
