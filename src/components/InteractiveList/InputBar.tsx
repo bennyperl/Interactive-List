@@ -11,23 +11,28 @@ const InputContainer = styled.div`
   margin-bottom: 16px;
 `;
 
-const Input = styled.input`
+const Input = styled.input<{ disabled?: boolean }>`
   flex: 1;
   padding: 12px 16px;
-  border: 2px solid ${({ theme }) => theme.border};
+  border: 2px solid ${({ disabled, theme }) => disabled ? theme.disabled : theme.border};
   border-radius: 6px;
-  background: ${({ theme }) => theme.input};
-  color: ${({ theme }) => theme.text};
+  background: ${({ disabled, theme }) => disabled ? theme.disabled + '20' : theme.input};
+  color: ${({ disabled, theme }) => disabled ? theme.textSecondary : theme.text};
   font-size: 14px;
   transition: border-color 0.2s ease;
+  cursor: ${({ disabled }) => disabled ? 'not-allowed' : 'text'};
 
   &:focus {
     outline: none;
-    border-color: ${({ theme }) => theme.primary};
+    border-color: ${({ disabled, theme }) => disabled ? theme.disabled : theme.primary};
   }
 
   &::placeholder {
-    color: ${({ theme }) => theme.textSecondary};
+    color: ${({ disabled, theme }) => disabled ? theme.disabled : theme.textSecondary};
+  }
+
+  &:disabled {
+    opacity: 0.6;
   }
 `;
 
@@ -106,7 +111,7 @@ const InputBar: React.FC<InputBarProps> = ({
         value={inputValue}
         onChange={handleInputChange(setInputValue)}
         onKeyDown={handleKeyPress}
-        placeholder={placeholder}
+        placeholder={disabled ? messages.readOnlyPlaceholder : placeholder}
         disabled={disabled}
       />
       <AddButton 

@@ -114,7 +114,7 @@ const VirtualizedList: React.FC<VirtualizedListProps> = ({
             error={error}
           />
         </div>
-      );
+      ); 
     }
 
     // Fallback empty div
