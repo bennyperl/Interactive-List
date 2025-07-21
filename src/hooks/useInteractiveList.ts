@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import Chance from 'chance';
+import { messages } from '../messages';
 
 interface ListItemData {
   id: string;
@@ -32,7 +33,7 @@ export const useInteractiveList = ({ initialItems = [] }: UseInteractiveListProp
     const item = items.find(item => item.id === itemId);
     if (!item) return;
 
-    const confirmed = window.confirm(`Are you sure you want to delete "${item.value}"?`);
+    const confirmed = window.confirm(messages.listItem.deleteConfirmation(item.value));
     if (confirmed) {
       setItems(prev => prev.filter(item => item.id !== itemId));
     }

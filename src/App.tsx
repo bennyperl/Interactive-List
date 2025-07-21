@@ -13,7 +13,7 @@ const CenteredContainer = styled.div`
 const App: React.FC = () => {
   return (
     <CenteredContainer>
-      <InteractiveList />
+      <InteractiveList  />
     </CenteredContainer>
   );
 };
