@@ -10,8 +10,8 @@ export const messages = {
   
   // InputBar component
   inputPlaceholder: 'Add new item...',
-  readOnlyPlaceholder: 'Read-only mode - cannot add items',
   addButtonTitle: 'Add item',
+  readOnlyPlaceholder: "Read-only mode: adding items is disabled",
   
   // EmptyState component
   emptyState: {

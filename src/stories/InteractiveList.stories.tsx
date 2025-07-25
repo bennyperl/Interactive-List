@@ -20,17 +20,13 @@ const meta: Meta<typeof InteractiveList> = {
       control: 'boolean',
       description: 'Enable error state with red border around the list',
     },
-    initialReadOnly: {
-      control: 'boolean',
-      description: 'Start the list in read-only mode',
-    },
   },
   decorators: [
     (Story: any) => (
       <ThemeProvider theme={darkTheme}>
         <div style={{ 
           background: '#181A20', 
-          padding: '20px', 
+          padding: '20px',
           minHeight: '100vh',
           display: 'flex',
           alignItems: 'center',
@@ -78,12 +74,12 @@ export const ErrorState: Story = {
 export const ReadOnly: Story = {
   args: {
     error: false,
-    initialReadOnly: true,
+    readOnly: true,
   },
   parameters: {
     docs: {
       description: {
-        story: 'Interactive list starting in read-only mode. Click the "Read Only" button to toggle to editable mode. In read-only mode, items cannot be added, edited, or deleted.',
+        story: 'Interactive list starting in read-only mode. In read-only mode, items cannot be added, edited, or deleted.',
       },
     },
   },
