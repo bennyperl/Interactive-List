@@ -57,14 +57,18 @@ type Story = StoryObj<typeof ListItem>;
 export const Interactive: Story = {
   args: {
     value: 'Sample list item',
-    onEdit: (newValue: string) => console.log('Editing item:', newValue),
+    onEdit: async (newValue: string) => {
+      console.log('Editing item:', newValue);
+      return { success: true }; // Simulate successful edit
+    },
     onDelete: () => console.log('Deleting item'),
     isHovered: false,
     onMouseEnter: () => console.log('Mouse enter'),
     onMouseLeave: () => console.log('Mouse leave'),
     readOnly: false,
+    clearErrors: false,
   },
-  render: ({ value, onEdit, onDelete, isHovered, onMouseEnter, onMouseLeave, readOnly }) => {
+  render: ({ value, onEdit, onDelete, isHovered, onMouseEnter, onMouseLeave, readOnly, clearErrors }) => {
     const [isItemHovered, setIsItemHovered] = React.useState(false);
     
     const handleMouseEnter = () => {
@@ -86,6 +90,7 @@ export const Interactive: Story = {
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         readOnly={readOnly}
+        clearErrors={clearErrors}
       />
     );
   },
@@ -93,6 +98,55 @@ export const Interactive: Story = {
     docs: {
       description: {
         story: 'Interactive list item with hover functionality. Hover over the item to see action buttons appear.',
+      },
+    },
+  },
+};
+
+export const WithValidationError: Story = {
+  args: {
+    value: 'Item with Error',
+    onEdit: async (newValue: string) => {
+      console.log('Edit with validation error:', newValue);
+      return { success: false, errorMessage: 'This is a validation error message' };
+    },
+    onDelete: () => console.log('Deleting item'),
+    isHovered: false,
+    onMouseEnter: () => console.log('Mouse enter'),
+    onMouseLeave: () => console.log('Mouse leave'),
+    readOnly: false,
+    clearErrors: false,
+  },
+  render: ({ value, onEdit, onDelete, isHovered, onMouseEnter, onMouseLeave, readOnly, clearErrors }) => {
+    const [isItemHovered, setIsItemHovered] = React.useState(false);
+    
+    const handleMouseEnter = () => {
+      setIsItemHovered(true);
+      onMouseEnter();
+    };
+    
+    const handleMouseLeave = () => {
+      setIsItemHovered(false);
+      onMouseLeave();
+    };
+
+    return (
+      <ListItem
+        value={value}
+        onEdit={onEdit}
+        onDelete={onDelete}
+        isHovered={isItemHovered}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        readOnly={readOnly}
+        clearErrors={clearErrors}
+      />
+    );
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'List item with validation error state. Shows how the component looks when validation fails during editing.',
       },
     },
   },

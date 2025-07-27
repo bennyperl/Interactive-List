@@ -1,20 +1,31 @@
 import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
 import AddIcon from '../../icons/AddIcon';
+import SpinnerIcon from '../../icons/SpinnerIcon';
+import ErrorIcon from '../../icons/ErrorIcon';
 import { messages } from '../../messages';
 
 const InputContainer = styled.div`
   display: flex;
-  align-items: center;
-  gap: 12px;
+  flex-direction: column;
+  gap: 8px;
   width: 100%;
   margin-bottom: 16px;
 `;
 
-const Input = styled.input<{ disabled?: boolean }>`
+const InputRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+`;
+
+const Input = styled.input<{ disabled?: boolean; hasError?: boolean }>`
   flex: 1;
   padding: 12px 16px;
-  border: 2px solid ${({ disabled, theme }) => disabled ? theme.disabled : theme.border};
+  border: 2px solid ${({ disabled, hasError, theme }) => 
+    hasError ? theme.delete : 
+    disabled ? theme.disabled : theme.border};
   border-radius: 6px;
   background: ${({ disabled, theme }) => disabled ? theme.disabled + '20' : theme.input};
   color: ${({ disabled, theme }) => disabled ? theme.textSecondary : theme.text};
@@ -24,7 +35,9 @@ const Input = styled.input<{ disabled?: boolean }>`
 
   &:focus {
     outline: none;
-    border-color: ${({ disabled, theme }) => disabled ? theme.disabled : theme.primary};
+    border-color: ${({ disabled, hasError, theme }) => 
+      hasError ? theme.delete : 
+      disabled ? theme.disabled : theme.primary};
   }
 
   &::placeholder {
@@ -59,10 +72,23 @@ const AddButton = styled.button`
   }
 `;
 
+const ErrorMessage = styled.div<{ show: boolean }>`
+  color: ${({ theme }) => theme.delete};
+  font-size: 12px;
+  font-weight: 500;
+  margin-left: 4px;
+  opacity: ${({ show }) => show ? 1 : 0};
+  transition: opacity 0.2s ease;
+  min-height: 16px;
+`;
+
 interface InputBarProps {
-  onAddItem: (value: string) => void;
+  onAddItem: (value: string) => Promise<boolean>;
   placeholder?: string;
   disabled?: boolean;
+  validationError?: boolean;
+  isLoading?: boolean;
+  errorMessage?: string;
 }
 
 const handleInputChange = (setInputValue: (value: string) => void) => (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -72,22 +98,27 @@ const handleInputChange = (setInputValue: (value: string) => void) => (e: React.
 const InputBar: React.FC<InputBarProps> = ({ 
   onAddItem, 
   placeholder = messages.inputPlaceholder,
-  disabled = false 
+  disabled = false,
+  validationError = false,
+  isLoading = false,
+  errorMessage = ''
 }) => {
   const [inputValue, setInputValue] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const trimmedValue = inputValue.trim();
-    if (!trimmedValue || disabled || isSubmitting) return;
+    if (!trimmedValue || disabled || isSubmitting || isLoading) return;
 
     setIsSubmitting(true);
     
     try {
-      onAddItem(trimmedValue);
-      setInputValue('');
-      inputRef.current?.focus();
+      const success = await onAddItem(trimmedValue);
+      if (success) {
+        setInputValue('');
+        inputRef.current?.focus();
+      }
     } catch (error) {
       console.error(messages.errors.addItemFailed, error);
     } finally {
@@ -101,26 +132,49 @@ const InputBar: React.FC<InputBarProps> = ({
     }
   };
 
-  const isButtonDisabled = !inputValue.trim() || disabled || isSubmitting;
+  const isButtonDisabled = !inputValue.trim() || disabled || isSubmitting || isLoading;
+
+  const renderButtonIcon = () => {
+    if (isLoading) {
+      return <SpinnerIcon size="medium" color="white" />;
+    }
+    if (validationError) {
+      return <ErrorIcon size="medium" color="white" />;
+    }
+    return <AddIcon size="medium" color="white" />;
+  };
+
+  const getErrorMessage = () => {
+    if (validationError && errorMessage) {
+      return errorMessage;
+    }
+    return '';
+  };
 
   return (
     <InputContainer>
-      <Input
-        ref={inputRef}
-        type="text"
-        value={inputValue}
-        onChange={handleInputChange(setInputValue)}
-        onKeyDown={handleKeyPress}
-        placeholder={disabled ? messages.readOnlyPlaceholder : placeholder}
-        disabled={disabled}
-      />
-      <AddButton 
-        onClick={handleSubmit}
-        disabled={isButtonDisabled}
-        title={messages.addButtonTitle}
-      >
-        <AddIcon size="medium" color="white" />
-      </AddButton>
+      <InputRow>
+        <Input
+          ref={inputRef}
+          type="text"
+          value={inputValue}
+          onChange={handleInputChange(setInputValue)}
+          onKeyDown={handleKeyPress}
+          placeholder={disabled ? messages.readOnlyPlaceholder : placeholder}
+          disabled={disabled}
+          hasError={validationError}
+        />
+        <AddButton 
+          onClick={handleSubmit}
+          disabled={isButtonDisabled}
+          title={messages.addButtonTitle}
+        >
+          {renderButtonIcon()}
+        </AddButton>
+      </InputRow>
+      <ErrorMessage show={validationError}>
+        {getErrorMessage()}
+      </ErrorMessage>
     </InputContainer>
   );
 };

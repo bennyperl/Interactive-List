@@ -1,14 +1,31 @@
 import React from 'react';
 import styled, { keyframes } from 'styled-components';
-import IconWrapper from './IconWrapper';
 
 const spin = keyframes`
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 `;
 
-const AnimatedIconWrapper = styled(IconWrapper)`
+const SpinnerContainer = styled.div<{ size?: 'small' | 'medium' | 'large'; color?: string }>`
+  width: ${({ size }) => {
+    switch (size) {
+      case 'small': return '14px';
+      case 'large': return '20px';
+      default: return '16px';
+    }
+  }};
+  height: ${({ size }) => {
+    switch (size) {
+      case 'small': return '14px';
+      case 'large': return '20px';
+      default: return '16px';
+    }
+  }};
+  border: 2px solid transparent;
+  border-top: 2px solid ${({ color }) => color || 'white'};
+  border-radius: 50%;
   animation: ${spin} 1s linear infinite;
+  display: inline-block;
 `;
 
 interface SpinnerIconProps {
@@ -17,9 +34,7 @@ interface SpinnerIconProps {
 }
 
 const SpinnerIcon: React.FC<SpinnerIconProps> = ({ size, color }) => (
-  <AnimatedIconWrapper size={size} color={color}>
-    <path d="M12 4V2A10 10 0 0 0 2 12h2a8 8 0 0 1 8-8z"/>
-  </AnimatedIconWrapper>
+  <SpinnerContainer size={size} color={color} />
 );
 
 export default SpinnerIcon; 
