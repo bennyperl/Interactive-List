@@ -48,7 +48,10 @@ type Story = StoryObj<typeof InputBar>;
 // Default state
 export const Default: Story = {
   args: {
-    onAddItem: (value: string) => console.log('Adding item:', value),
+    onAddItem: async (value: string) => {
+      console.log('Adding item:', value);
+      return true;
+    },
     placeholder: 'Add new item...',
     disabled: false,
   },
@@ -64,7 +67,10 @@ export const Default: Story = {
 // Disabled state
 export const Disabled: Story = {
   args: {
-    onAddItem: (value: string) => console.log('Adding item:', value),
+    onAddItem: async (value: string) => {
+      console.log('Adding item:', value);
+      return true;
+    },
     placeholder: 'Add new item...',
     disabled: true,
   },
@@ -80,7 +86,10 @@ export const Disabled: Story = {
 // Custom placeholder
 export const CustomPlaceholder: Story = {
   args: {
-    onAddItem: (value: string) => console.log('Adding item:', value),
+    onAddItem: async (value: string) => {
+      console.log('Adding item:', value);
+      return true;
+    },
     placeholder: 'Enter your task here...',
     disabled: false,
   },
@@ -96,7 +105,10 @@ export const CustomPlaceholder: Story = {
 // Empty input validation
 export const EmptyInputValidation: Story = {
   args: {
-    onAddItem: (value: string) => console.log('Adding item:', value),
+    onAddItem: async (value: string) => {
+      console.log('Adding item:', value);
+      return true;
+    },
     placeholder: 'Add new item...',
     disabled: false,
   },

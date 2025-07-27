@@ -64,7 +64,7 @@ interface ListItemData {
 interface VirtualizedListProps {
   items: ListItemData[];
   hoveredItemId: string | null;
-  onEdit: (itemId: string, newValue: string) => void;
+  onEdit: (itemId: string, newValue: string) => Promise<void>;
   onDelete: (itemId: string) => void;
   onMouseEnter: (itemId: string) => void;
   onMouseLeave: () => void;
@@ -72,6 +72,8 @@ interface VirtualizedListProps {
   totalItems?: number;
   readOnly?: boolean;
   error?: boolean;
+  validationType?: 'custom' | 'regex' | 'none';
+  errorMessage?: string;
 }
 
 const ITEM_HEIGHT = 52; // Reduced height for less spacing between items
@@ -86,7 +88,9 @@ const VirtualizedList: React.FC<VirtualizedListProps> = ({
   isLoading = false,
   totalItems = 0,
   readOnly = false,
-  error = false
+  error = false,
+  validationType = 'none',
+  errorMessage = ''
 }) => {
   const renderRow = useCallback(({ index, style }: { index: number; style: React.CSSProperties }) => {
     // Show loading item if data is still loading and this index is beyond loaded items
@@ -112,6 +116,8 @@ const VirtualizedList: React.FC<VirtualizedListProps> = ({
             onMouseLeave={onMouseLeave}
             readOnly={readOnly}
             error={error}
+            validationType={validationType}
+            errorMessage={errorMessage}
           />
         </div>
       ); 
@@ -119,7 +125,7 @@ const VirtualizedList: React.FC<VirtualizedListProps> = ({
 
     // Fallback empty div
     return <div style={style} />;
-  }, [items, hoveredItemId, onEdit, onDelete, onMouseEnter, onMouseLeave, isLoading, readOnly, error]);
+  }, [items, hoveredItemId, onEdit, onDelete, onMouseEnter, onMouseLeave, isLoading, readOnly, error, validationType, errorMessage]);
 
   // Calculate total count for virtualization
   const itemCount = isLoading ? Math.max(items.length + 10, totalItems) : items.length;

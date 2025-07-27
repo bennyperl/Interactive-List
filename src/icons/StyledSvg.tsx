@@ -21,6 +21,7 @@ const StyledSvg = styled.svg<StyledSvgProps>`
     }
   }};
   fill: ${({ color, theme }) => color || 'currentColor'};
+  transform-origin: center;
 `;
 
 export default StyledSvg; 

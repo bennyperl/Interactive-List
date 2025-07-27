@@ -57,7 +57,9 @@ type Story = StoryObj<typeof ListItem>;
 export const Interactive: Story = {
   args: {
     value: 'Sample list item',
-    onEdit: (newValue: string) => console.log('Editing item:', newValue),
+    onEdit: async (newValue: string) => {
+      console.log('Editing item:', newValue);
+    },
     onDelete: () => console.log('Deleting item'),
     isHovered: false,
     onMouseEnter: () => console.log('Mouse enter'),

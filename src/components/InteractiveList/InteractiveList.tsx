@@ -5,6 +5,7 @@ import VirtualizedList from './VirtualizedList';
 import { useInteractiveList } from '../../hooks/useInteractiveList';
 import { mockItems } from '../../data/mockData';
 import { messages } from '../../messages';
+import { ValidationRule } from '../../validators/validationFunction';
 
 const ListContainer = styled.div`
   width: 480px;
@@ -97,14 +98,30 @@ const ErrorIndicator = styled.div<{ hasError: boolean }>`
 interface InteractiveListProps {
   error?: boolean;
   readOnly?: boolean;
+  customValidation?: ValidationRule;
+  regexValidation?: string;
+  loading?: boolean;
 }
 
-const InteractiveList: FunctionComponent<InteractiveListProps> = ({ error = false, readOnly }) => {
+const InteractiveList: FunctionComponent<InteractiveListProps> = ({ 
+  error = false, 
+  readOnly,
+  customValidation,
+  regexValidation,
+  loading = false
+}) => {
   const [isLoading, setIsLoading] = useState(true);
   const [initialItems, setInitialItems] = useState<typeof mockItems>([]);
   // Only use internal state if readOnly prop is not provided
   const [internalReadOnly, setInternalReadOnly] = useState(false);
   const isReadOnly = readOnly !== undefined ? readOnly : internalReadOnly;
+
+  // Determine validation type
+  const getValidationType = () => {
+    if (customValidation) return 'custom';
+    if (regexValidation) return 'regex';
+    return 'none';
+  };
 
   const {
     items,
@@ -113,8 +130,15 @@ const InteractiveList: FunctionComponent<InteractiveListProps> = ({ error = fals
     handleDelete,
     handleMouseEnter,
     handleMouseLeave,
-    addItem
-  } = useInteractiveList({ initialItems });
+    addItem,
+    validationError,
+    isValidationLoading,
+    errorMessage
+  } = useInteractiveList({ 
+    initialItems, 
+    customValidation, 
+    regexValidation 
+  });
 
   // Simulate loading data
   useEffect(() => {
@@ -160,7 +184,14 @@ const InteractiveList: FunctionComponent<InteractiveListProps> = ({ error = fals
         {messages.readOnlyIndicator}
       </ReadOnlyIndicator>
       
-      <InputBar onAddItem={addItem} disabled={isReadOnly || error} />
+      <InputBar 
+        onAddItem={addItem} 
+        disabled={isReadOnly || error} 
+        validationError={validationError}
+        isLoading={isValidationLoading || loading}
+        validationType={getValidationType()}
+        errorMessage={errorMessage}
+      />
       <VirtualizedList
         items={items}
         hoveredItemId={hoveredItemId}
@@ -172,6 +203,8 @@ const InteractiveList: FunctionComponent<InteractiveListProps> = ({ error = fals
         totalItems={items.length}
         readOnly={isReadOnly}
         error={error}
+        validationType={getValidationType()}
+        errorMessage={errorMessage}
       />
     </ListContainer>
   );
