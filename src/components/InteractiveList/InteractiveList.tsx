@@ -114,14 +114,8 @@ const InteractiveList: FunctionComponent<InteractiveListProps> = ({
   const [initialItems, setInitialItems] = useState<typeof mockItems>([]);
   // Only use internal state if readOnly prop is not provided
   const [internalReadOnly, setInternalReadOnly] = useState(false);
+  const [clearErrors, setClearErrors] = useState(false);
   const isReadOnly = readOnly !== undefined ? readOnly : internalReadOnly;
-
-  // Determine validation type
-  const getValidationType = () => {
-    if (customValidation) return 'custom';
-    if (regexValidation) return 'regex';
-    return 'none';
-  };
 
   const {
     items,
@@ -131,6 +125,7 @@ const InteractiveList: FunctionComponent<InteractiveListProps> = ({
     handleMouseEnter,
     handleMouseLeave,
     addItem,
+    clearValidationErrors,
     validationError,
     isValidationLoading,
     errorMessage
@@ -139,6 +134,15 @@ const InteractiveList: FunctionComponent<InteractiveListProps> = ({
     customValidation, 
     regexValidation 
   });
+
+  // Clear validation errors when validation props change
+  useEffect(() => {
+    clearValidationErrors();
+    setClearErrors(true);
+    // Reset the clearErrors flag after a short delay
+    const timer = setTimeout(() => setClearErrors(false), 100);
+    return () => clearTimeout(timer);
+  }, [customValidation, regexValidation, clearValidationErrors]);
 
   // Simulate loading data
   useEffect(() => {
@@ -189,7 +193,6 @@ const InteractiveList: FunctionComponent<InteractiveListProps> = ({
         disabled={isReadOnly || error} 
         validationError={validationError}
         isLoading={isValidationLoading || loading}
-        validationType={getValidationType()}
         errorMessage={errorMessage}
       />
       <VirtualizedList
@@ -203,8 +206,8 @@ const InteractiveList: FunctionComponent<InteractiveListProps> = ({
         totalItems={items.length}
         readOnly={isReadOnly}
         error={error}
-        validationType={getValidationType()}
         errorMessage={errorMessage}
+        clearErrors={clearErrors}
       />
     </ListContainer>
   );

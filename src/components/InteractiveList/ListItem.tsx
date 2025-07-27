@@ -69,10 +69,9 @@ const EditInput = styled.input<{ hasError?: boolean }>`
 const IconsWrapper = styled.div<{ isHovered?: boolean }>`
   display: flex;
   align-items: center;
-  opacity: ${({ isHovered }) => (isHovered ? 1 : 0)};
-  transition: opacity 0.2s;
-  gap: 4px;
-  flex-shrink: 0;
+  gap: 8px;
+  opacity: ${({ isHovered }) => isHovered ? 1 : 0};
+  transition: opacity 0.2s ease;
 `;
 
 const ValidationSpinner = styled.div`
@@ -81,7 +80,7 @@ const ValidationSpinner = styled.div`
   justify-content: center;
   width: 20px;
   height: 20px;
-  margin-right: 8px;
+  margin-left: 8px;
 `;
 
 const EditContainer = styled.div`
@@ -92,26 +91,16 @@ const EditContainer = styled.div`
   margin-right: 12px;
 `;
 
-const EditErrorMessage = styled.div<{ show: boolean }>`
-  color: ${({ theme }) => theme.delete};
-  font-size: 11px;
-  font-weight: 500;
-  opacity: ${({ show }) => show ? 1 : 0};
-  transition: opacity 0.2s ease;
-  min-height: 14px;
-`;
-
 interface ListItemProps {
   value: string;
-  onEdit: (newValue: string) => Promise<void>;
+  onEdit: (newValue: string) => Promise<{ success: boolean; errorMessage?: string }>;
   onDelete: () => void;
   isHovered?: boolean;
   onMouseEnter: () => void;
   onMouseLeave: () => void;
   readOnly?: boolean;
-  error?: boolean;
-  validationType?: 'custom' | 'regex' | 'none';
   errorMessage?: string;
+  clearErrors?: boolean;
 }
 
 const ListItem: React.FC<ListItemProps> = ({ 
@@ -122,15 +111,22 @@ const ListItem: React.FC<ListItemProps> = ({
   onMouseEnter,
   onMouseLeave,
   readOnly = false,
-  error = false,
-  validationType = 'none',
-  errorMessage = ''
+  errorMessage = '',
+  clearErrors = false
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(value);
   const [isValidating, setIsValidating] = useState(false);
   const [validationError, setValidationError] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Clear local validation errors when clearErrors prop changes
+  useEffect(() => {
+    if (clearErrors) {
+      setValidationError(false);
+      setIsValidating(false);
+    }
+  }, [clearErrors]);
 
   // Exit editing mode if read-only is enabled
   useEffect(() => {
@@ -158,12 +154,15 @@ const ListItem: React.FC<ListItemProps> = ({
       setIsValidating(true);
       setValidationError(false);
       
-      try {
-        await onEdit(editValue.trim());
-        setIsEditing(false);
-      } catch (error) {
+      const result = await onEdit(editValue.trim());
+      
+      if (!result.success) {
+        // Validation failed, keep edit mode open and show red border
         setValidationError(true);
-      } finally {
+        setIsValidating(false);
+      } else {
+        // Validation passed, close edit mode
+        setIsEditing(false);
         setIsValidating(false);
       }
     } else {
@@ -190,13 +189,6 @@ const ListItem: React.FC<ListItemProps> = ({
     }
   };
 
-  const getEditErrorMessage = () => {
-    if (validationError && errorMessage) {
-      return errorMessage;
-    }
-    return '';
-  };
-
   return (
     <ItemContainer 
       isHovered={isHovered}
@@ -217,11 +209,6 @@ const ListItem: React.FC<ListItemProps> = ({
               disabled={readOnly || isValidating}
               hasError={validationError}
             />
-            {validationError && (
-              <EditErrorMessage show={validationError}>
-                {getEditErrorMessage()}
-              </EditErrorMessage>
-            )}
           </EditContainer>
           {isValidating && (
             <ValidationSpinner>

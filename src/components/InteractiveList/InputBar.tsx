@@ -88,7 +88,6 @@ interface InputBarProps {
   disabled?: boolean;
   validationError?: boolean;
   isLoading?: boolean;
-  validationType?: 'custom' | 'regex' | 'none';
   errorMessage?: string;
 }
 
@@ -102,7 +101,6 @@ const InputBar: React.FC<InputBarProps> = ({
   disabled = false,
   validationError = false,
   isLoading = false,
-  validationType = 'none',
   errorMessage = ''
 }) => {
   const [inputValue, setInputValue] = useState('');
